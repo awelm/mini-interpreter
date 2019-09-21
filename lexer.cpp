@@ -17,6 +17,8 @@ parentheses: (4+1);
 
 
 bool Lexer::isTerminal(char c) {
+  if (isspace(c))
+    return true;
   if(c=='+' || c=='-' || c=='*' || c=='/' || c=='(' || c==')' || c==';')
   return true;
   else
@@ -40,9 +42,14 @@ pair<Token, string> Lexer::getNextToken() {
 
     // terminate matching process once you reach a terminal symbol
     if(isTerminal(currChar)) {
-      // If current token match is only one character long then we can
-      // use a switch statement to capture it
+      // If current terminal is only one character long
       if(currentIndex == nextTokenStart) {
+        if(isspace(currChar)) {
+          // skip whitespace tokens
+          nextTokenStart++;
+          currentIndex++;
+          continue;
+        }
         pair<Token, string> currTokenPair;
         switch(currChar) {
           case '+':

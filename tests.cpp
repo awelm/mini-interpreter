@@ -51,6 +51,21 @@ void lexerTests() {
   assert(output[4] == make_pair(CPAREN, string(")")));
   assert(output[5] == make_pair(ADD, string("+")));
   assert(output[6] == make_pair(NUM, string("1")));
+
+  // whitespace tests
+  lx = Lexer("4  + 1;");
+  output.clear();
+  while(lx.hasNextToken())
+    output.push_back(lx.getNextToken());
+  assert(output[0] == make_pair(NUM, string("4")));
+  assert(output[1] == make_pair(ADD, string("+")));
+  assert(output[2] == make_pair(NUM, string("1")));
+
+  lx = Lexer("   123456  ;");
+  output.clear();
+  while(lx.hasNextToken())
+    output.push_back(lx.getNextToken());
+  assert(output[0] == make_pair(NUM, string("123456")));
 }
 
 int main() {
