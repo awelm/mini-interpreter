@@ -2,7 +2,7 @@
 
 using namespace std;
 
-enum Token {
+enum TokenType {
   NUM,
   ADD,
   SUB,
@@ -14,6 +14,16 @@ enum Token {
   END,
   EMPTY
 };
+
+
+struct Token {
+  Token();
+  Token(TokenType tt, string t);
+  TokenType tokenType;
+  string value;
+};
+
+bool operator==(const Token& lhs, const Token& rhs);
 
 class Lexer {
 private:
@@ -27,5 +37,5 @@ public:
 
   Lexer(string program);
   bool hasNextToken();
-  pair<Token, string> getNextToken();
+  Token getNextToken();
 };

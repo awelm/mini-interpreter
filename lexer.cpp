@@ -15,6 +15,18 @@ divide: 4/2;
 parentheses: (4+1);
 */
 
+Token::Token() {
+  this->tokenType = EMPTY;
+}
+
+Token::Token(TokenType tt, string val) {
+  this->tokenType = tt;
+  this->value = val;
+}
+
+bool operator==(const Token& lhs, const Token& rhs) {
+    return lhs.tokenType == rhs.tokenType && lhs.value == rhs.value;
+}
 
 bool Lexer::isTerminal(char c) {
   if (isspace(c))
@@ -34,7 +46,7 @@ bool Lexer::hasNextToken() {
   return nextTokenStart < program.size();
 }
 
-pair<Token, string> Lexer::getNextToken() {
+Token Lexer::getNextToken() {
   int currentIndex = nextTokenStart;
 
   while(currentIndex < program.size()) {
@@ -50,32 +62,32 @@ pair<Token, string> Lexer::getNextToken() {
           currentIndex++;
           continue;
         }
-        pair<Token, string> currTokenPair;
+        Token currToken;
         switch(currChar) {
           case '+':
-          currTokenPair = make_pair(ADD, string(1,program[currentIndex]));
+          currToken = Token(ADD, string(1,program[currentIndex]));
           break;
           case '-':
-          currTokenPair = make_pair(SUB, string(1,program[currentIndex]));
+          currToken = Token(SUB, string(1,program[currentIndex]));
           break;
           case '*':
-          currTokenPair = make_pair(MULT, string(1,program[currentIndex]));
+          currToken = Token(MULT, string(1,program[currentIndex]));
           break;
           case '/':
-          currTokenPair = make_pair(DIV, string(1,program[currentIndex]));
+          currToken = Token(DIV, string(1,program[currentIndex]));
           break;
           case ';':
-          currTokenPair = make_pair(SEMI, string(1,program[currentIndex]));
+          currToken = Token(SEMI, string(1,program[currentIndex]));
           break;
           case '(':
-          currTokenPair = make_pair(OPAREN, string(1,program[currentIndex]));
+          currToken = Token(OPAREN, string(1,program[currentIndex]));
           break;
           case ')':
-          currTokenPair = make_pair(CPAREN, string(1,program[currentIndex]));
+          currToken = Token(CPAREN, string(1,program[currentIndex]));
           break;
         }
         nextTokenStart = currentIndex + 1;
-        return currTokenPair;
+        return currToken;
       } else {
         // Check if string only contains numbers
         string currToken = program.substr(nextTokenStart, currentIndex-nextTokenStart);
@@ -86,7 +98,7 @@ pair<Token, string> Lexer::getNextToken() {
         }
 
         nextTokenStart = currentIndex;
-        return make_pair(NUM, currToken);
+        return Token(NUM, currToken);
       }
     }
 
@@ -95,4 +107,6 @@ pair<Token, string> Lexer::getNextToken() {
       currentIndex++;
     }
   }
+
+  return Token(EMPTY, "");
 }
