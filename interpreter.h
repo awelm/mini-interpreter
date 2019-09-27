@@ -1,13 +1,11 @@
 #include <string>
+
+#ifndef LEXER_INCL_GUARD
+#define LEXER_INCL_GUARD
 #include "lexer.h"
+#endif
 
 using namespace std;
-
-/* GRAMMAR
-  expression := <divmul>((ADD|SUB)<divmul>)*
-  divmul := <factor>((MULT|DIV)<factor>)*
-  factor := NUM | (OPAREN expression CPAREN)
-*/
 
 class Interpreter {
 private:

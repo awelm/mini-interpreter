@@ -1,4 +1,5 @@
 #include "interpreter.h"
+#include "parser.h"
 #include <iostream>
 #include <vector>
 
@@ -87,7 +88,7 @@ void interpreterTests() {
   lx = Lexer("(80-10)/7 + 4;");
   assert(Interpreter(lx).expression() == 14);
 
-  // Test invalid expressions 
+  // Test invalid expressions
   lx = Lexer("1+;");
   bool exceptionThrown = false;
   try {
@@ -110,9 +111,37 @@ void interpreterTests() {
 }
 
 
+void parserTests() {
+  Lexer lx("1*2;");
+  Parser p(lx);
+  p.expression();
+
+  lx = Lexer("4  - 12;");
+  p = Parser(lx);
+  p.expression();
+
+  lx = Lexer("4 + 3 * 8;");
+  p = Parser(lx);
+  p.expression();
+
+  lx = Lexer("(4 + 3) * 8;");
+  p = Parser(lx);
+  p.expression();
+
+  lx = Lexer("(((4)));");
+  p = Parser(lx);
+  p.expression();
+
+  lx = Lexer("(80-10)/7 + 4;");
+  p = Parser(lx);
+  p.expression();
+}
+
+
 int main() {
   lexerTests();
   interpreterTests();
+  parserTests();
   cout << "All tests passed" << endl;
   return 0;
 }
