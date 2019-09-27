@@ -9,7 +9,7 @@ using namespace std;
 /* GRAMMAR
   expression := <divmul>((ADD|SUB)<divmul>)*
   divmul := <factor>((MULT|DIV)<factor>)*
-  factor := NUM | (OPAREN expression CPAREN)
+  factor := NUM | NEG factor | (OPAREN expression CPAREN)
 */
 
 class ASTNode {

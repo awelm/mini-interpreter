@@ -13,6 +13,7 @@ sub: 4-2;
 multiply: 1*1;
 divide: 4/2;
 parentheses: (4+1);
+negative operator: 3 + -2;
 */
 
 Token::Token() {
@@ -32,14 +33,15 @@ bool Lexer::isTerminal(char c) {
   if (isspace(c))
     return true;
   if(c=='+' || c=='-' || c=='*' || c=='/' || c=='(' || c==')' || c==';')
-  return true;
+    return true;
   else
-  return false;
+    return false;
 }
 
 Lexer::Lexer(string program) {
   nextTokenStart = 0;
   this->program = program;
+  prevToken = Token();
 }
 
 bool Lexer::hasNextToken() {
@@ -68,7 +70,10 @@ Token Lexer::getNextToken() {
           currToken = Token(ADD, string(1,program[currentIndex]));
           break;
           case '-':
-          currToken = Token(SUB, string(1,program[currentIndex]));
+            if(prevToken.tokenType == CPAREN || prevToken.tokenType == NUM)
+              currToken = Token(SUB, string(1,program[currentIndex]));
+            else
+              currToken = Token(NEG, string(1,program[currentIndex]));
           break;
           case '*':
           currToken = Token(MULT, string(1,program[currentIndex]));
@@ -87,18 +92,20 @@ Token Lexer::getNextToken() {
           break;
         }
         nextTokenStart = currentIndex + 1;
+        prevToken = currToken;
         return currToken;
       } else {
         // Check if string only contains numbers
-        string currToken = program.substr(nextTokenStart, currentIndex-nextTokenStart);
+        string currTokenValue = program.substr(nextTokenStart, currentIndex-nextTokenStart);
         try {
-          stoi(currToken);
+          stoi(currTokenValue);
         } catch(...) {
           throw INVALID_NUMBER;
         }
 
         nextTokenStart = currentIndex;
-        return Token(NUM, currToken);
+        prevToken = Token(NUM, currTokenValue);
+        return prevToken;
       }
     }
 

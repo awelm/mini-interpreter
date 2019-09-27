@@ -67,6 +67,49 @@ void lexerTests() {
   while(lx.hasNextToken())
     output.push_back(lx.getNextToken());
   assert(output[0] == Token(NUM, string("123456")));
+
+  // negative numbers
+  lx = Lexer("4+ -1;");
+  output.clear();
+  while(lx.hasNextToken())
+    output.push_back(lx.getNextToken());
+  assert(output[0] == Token(NUM, string("4")));
+  assert(output[1] == Token(ADD, string("+")));
+  assert(output[2] == Token(NEG, string("-")));
+  assert(output[3] == Token(NUM, string("1")));
+
+  lx = Lexer("-(1+2);");
+  output.clear();
+  while(lx.hasNextToken())
+    output.push_back(lx.getNextToken());
+  assert(output[0] == Token(NEG, string("-")));
+  assert(output[1] == Token(OPAREN, string("(")));
+  assert(output[2] == Token(NUM, string("1")));
+  assert(output[3] == Token(ADD, string("+")));
+  assert(output[4] == Token(NUM, string("2")));
+  assert(output[5] == Token(CPAREN, string(")")));
+
+  lx = Lexer("-12--15-10;");
+  output.clear();
+  while(lx.hasNextToken())
+    output.push_back(lx.getNextToken());
+  assert(output[0] == Token(NEG, string("-")));
+  assert(output[1] == Token(NUM, string("12")));
+  assert(output[2] == Token(SUB, string("-")));
+  assert(output[3] == Token(NEG, string("-")));
+  assert(output[4] == Token(NUM, string("15")));
+  assert(output[5] == Token(SUB, string("-")));
+  assert(output[6] == Token(NUM, string("10")));
+
+  lx = Lexer("-(-3);");
+  output.clear();
+  while(lx.hasNextToken())
+    output.push_back(lx.getNextToken());
+  assert(output[0] == Token(NEG, string("-")));
+  assert(output[1] == Token(OPAREN, string("(")));
+  assert(output[2] == Token(NEG, string("-")));
+  assert(output[3] == Token(NUM, string("3")));
+  assert(output[4] == Token(CPAREN, string(")")));
 }
 
 void interpreterTests() {
@@ -93,6 +136,31 @@ void interpreterTests() {
   lx = Lexer("(80-10)/7 + 4;");
   p = Parser(lx);
   assert(Interpreter(p).interpret() == 14);
+
+  // test negative case
+  lx = Lexer("-1-3;");
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == -4);
+
+  lx = Lexer("-1--3;");
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == 2);
+
+  lx = Lexer("-(1+2-10);");
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == 7);
+
+  lx = Lexer("-(-3);");
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == 3);
+
+  lx = Lexer("----1;");
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == 1);
+
+  lx = Lexer("5 - - - - (3 + 4) - 2;");
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == 10);
 
   // Test invalid expressions
   bool exceptionThrown = false;

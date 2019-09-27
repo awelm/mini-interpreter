@@ -65,6 +65,11 @@ ASTNode* Parser::factor() {
     ASTNode* numLeaf = new ASTNode(NUM);
     numLeaf->num = stoi(t.value);
     return numLeaf;
+  } else if(tt == NEG) {
+    eat(NEG);
+    ASTNode* negRoot = new ASTNode(NEG);
+    negRoot->children.push_back(factor());
+    return negRoot;
   } else {
     eat(OPAREN);
     ASTNode* subExprRoot = expression();
