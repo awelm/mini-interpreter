@@ -5,19 +5,18 @@
 using namespace std;
 
 enum TokenType {
-  NUM,
-  ADD,
-  SUB,
-  MULT,
-  DIV,
-  SEMI,
-  OPAREN,
-  CPAREN,
-  END,
-  ID,
-  NEG, // used only in parser and interpreter
-  ASSIGN,
-  EMPTY
+  NUM, //0
+  ADD, //1
+  SUB, //2
+  MULT, //3
+  DIV, //4
+  SEMI, //5
+  OPAREN, //6
+  CPAREN, //7
+  END, //8
+  ID, //9
+  ASSIGN, //10
+  EMPTY //11
 };
 
 

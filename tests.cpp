@@ -147,7 +147,7 @@ void lexerTests() {
   assert(output[10] == Token(CPAREN, string(")")));
   assert(output[11] == Token(SEMI, string(";")));
 
-  lx = Lexer("a=b*c; x = 10;");
+  lx = Lexer("a=b*c; x=a*10;");
   output.clear();
   while(lx.hasNextToken())
     output.push_back(lx.getNextToken());
@@ -159,65 +159,80 @@ void lexerTests() {
   assert(output[5] == Token(SEMI, string(";")));
   assert(output[6] == Token(ID, string("x")));
   assert(output[7] == Token(ASSIGN, string("=")));
-  assert(output[8] == Token(NUM, string("10")));
-  assert(output[9] == Token(SEMI, string(";")));
+  assert(output[8] == Token(ID, string("a")));
+  assert(output[9] == Token(MULT, string("*")));
+  assert(output[10] == Token(NUM, string("10")));
+  assert(output[11] == Token(SEMI, string(";")));
 }
 
 void interpreterTests() {
   Lexer lx("t=123+342;");
-  Parser p = Parser(lx);
-  assert(Interpreter(p).interpret() == 465);
+  Interpreter i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 465);
 
   lx = Lexer("t=4  - 12;");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == -8);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == -8);
 
   lx = Lexer("t=4 + 3 * 8;");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == 28);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 28);
 
   lx = Lexer("t=(4 + 3) * 8;");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == 56);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 56);
 
   lx = Lexer("t=(((4)));");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == 4);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 4);
 
   lx = Lexer("t=(80-10)/7 + 4;");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == 14);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 14);
 
   // test negative case
   lx = Lexer("t=-1-3;");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == -4);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == -4);
 
   lx = Lexer("t=-1--3;");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == 2);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 2);
 
   lx = Lexer("t=-(1+2-10);");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == 7);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 7);
 
   lx = Lexer("t=-(-3);");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == 3);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 3);
 
   lx = Lexer("t=----1;");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == 1);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 1);
 
   lx = Lexer("t=5 - - - - (3 + 4) - 2;");
-  p = Parser(lx);
-  assert(Interpreter(p).interpret() == 10);
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 10);
 
   // Test invalid expressions
   bool exceptionThrown = false;
   try {
     lx = Lexer("t=1+;");
-    Interpreter(lx).interpret();
+    i = Interpreter(Parser(lx));
+    i.interpret();
   } catch (int e) {
     if(e == Interpreter::UNEXPECTED_TOKEN)
       exceptionThrown = true;
@@ -227,12 +242,38 @@ void interpreterTests() {
   exceptionThrown = false;
   try {
     lx = Lexer("t=1++3;");
-    Interpreter(lx).interpret();
+    i = Interpreter(Parser(lx));
+    i.interpret();
   } catch (int e) {
     if(e == Interpreter::UNEXPECTED_TOKEN)
       exceptionThrown = true;
   }
   assert(exceptionThrown);
+
+  // Test multiple statements
+  lx = Lexer("f=5+4; g=f*2;");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("f") == 9);
+  assert(i.getRuntimeValue("g") == 18);
+
+  lx = Lexer("f=5+4; g=f*f;");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("f") == 9);
+  assert(i.getRuntimeValue("g") == 81);
+
+  lx = Lexer("f=5+4; g=-f*f+10;");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("f") == 9);
+  assert(i.getRuntimeValue("g") == -71);
+
+  lx = Lexer("f=5+4; g=-f*f+10; f=10; f=f; g=f+1;");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("f") == 10);
+  assert(i.getRuntimeValue("g") == 11);
 }
 
 int main() {

@@ -12,6 +12,7 @@ private:
   Parser p;
   unordered_map<string, int> symbolTable;
   int visit(ASTNode* n);
+  int visitCompound(ASTNode* n);
   int visitUnaryOperator(ASTNode* n);
   int visitBinaryOperator(ASTNode* n);
   int visitAssignOperator(ASTNode* n);
@@ -21,5 +22,6 @@ public:
   static const int UNEXPECTED_TOKEN = 17;
   static const int UNKNOWN_SYMBOL = 18;
   Interpreter(Parser p);
-  int interpret();
+  void interpret();
+  int getRuntimeValue(string variable);
 };

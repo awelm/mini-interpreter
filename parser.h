@@ -17,16 +17,16 @@ using namespace std;
 */
 
 enum NodeType {
-  NODE_COMPOUND,
-  NODE_ADD,
-  NODE_SUB,
-  NODE_MULT,
-  NODE_DIV,
-  NODE_NEG,
-  NODE_ASSIGN,
-  NODE_ID,
-  NODE_NUM,
-  NODE_NOOP
+  NODE_COMPOUND, //0
+  NODE_ADD, //1
+  NODE_SUB, //2
+  NODE_MULT, //3
+  NODE_DIV, //4
+  NODE_NEG, //5
+  NODE_ASSIGN, //6
+  NODE_ID, //7
+  NODE_NUM, //8
+  NODE_NOOP //9
 };
 
 class ASTNode {

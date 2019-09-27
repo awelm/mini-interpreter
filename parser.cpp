@@ -20,6 +20,23 @@ void Parser::eat(TokenType tokenType) {
   throw UNEXPECTED_TOKEN;
 }
 
+ASTNode* Parser::statementList() {
+  ASTNode* statementList = new ASTNode(NODE_COMPOUND);
+  statementList->children.push_back(statement());
+  while(this->currToken.tokenType == SEMI) {
+    eat(SEMI);
+    statementList->children.push_back(statement());
+  }
+  return statementList;
+}
+
+ASTNode* Parser::statement() {
+  if(this->currToken.tokenType == EMPTY)
+    return new ASTNode(NODE_NOOP);
+  else
+    return assignment();
+}
+
 ASTNode* Parser::assignment() {
   ASTNode* varRoot = variable();
   eat(ASSIGN);

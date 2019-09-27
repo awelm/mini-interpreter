@@ -7,13 +7,15 @@ using namespace std;
 Interpreter::Interpreter(Parser p): p(p) {
 }
 
-int Interpreter::interpret() {
-  // Assuming start symbol is 'assignment'
-  return visit(p.assignment());
+void Interpreter::interpret() {
+  // Assuming start symbol is 'statement_list'
+  visit(p.statementList());
 }
 
 int Interpreter::visit(ASTNode* n) {
   switch(n->nodeType) {
+    case NODE_COMPOUND:
+    return visitCompound(n);
     case NODE_NUM:
     return visitNum(n);
     break;
@@ -29,10 +31,23 @@ int Interpreter::visit(ASTNode* n) {
     case NODE_ASSIGN:
     return visitAssignOperator(n);
     break;
+    case NODE_NOOP:
+    break;
+    case NODE_ID:
+    return visitVar(n);
+    break;
     default:
     throw UNEXPECTED_TOKEN;
     break;
   }
+}
+
+// visit and evaluate child nodes from left to right. Return value isnt used
+int Interpreter::visitCompound(ASTNode* n) {
+  for(int child = 0; child < n->children.size(); child++) {
+    visit(n->children[child]);
+  }
+  return 0;
 }
 
 int Interpreter::visitBinaryOperator(ASTNode* n) {
@@ -84,4 +99,10 @@ int Interpreter::visitVar(ASTNode* n) {
   if(symbolTable.find(varName) == symbolTable.end())
   throw UNKNOWN_SYMBOL;
   return symbolTable[varName];
+}
+
+int Interpreter::getRuntimeValue(string variable) {
+  if(symbolTable.find(variable) == symbolTable.end())
+    throw UNKNOWN_SYMBOL;
+  return symbolTable[variable];
 }
