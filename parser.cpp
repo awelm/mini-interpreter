@@ -4,7 +4,7 @@
 
 using namespace std;
 
-ASTNode::ASTNode(TokenType tt) {
+ASTNode::ASTNode(NodeType tt) {
   this->nodeType = tt;
 }
 
@@ -24,7 +24,7 @@ ASTNode* Parser::assignment() {
   ASTNode* varRoot = variable();
   eat(ASSIGN);
   ASTNode* exprRoot = expression();
-  ASTNode* assignRoot = new ASTNode(ASSIGN);
+  ASTNode* assignRoot = new ASTNode(NODE_ASSIGN);
   assignRoot->children.push_back(varRoot);
   assignRoot->children.push_back(exprRoot);
   return assignRoot;
@@ -33,13 +33,18 @@ ASTNode* Parser::assignment() {
 ASTNode* Parser::expression() {
   ASTNode* exprRoot = divmul();
   TokenType tt = currToken.tokenType;
+  NodeType nt = NODE_NOOP;
   while(tt==ADD || tt==SUB) {
-    if(tt==ADD)
-    eat(ADD);
-    else if(tt==SUB)
-    eat(SUB);
+    if(tt==ADD) {
+      eat(ADD);
+      nt = NODE_ADD;
+    }
+    else if(tt==SUB) {
+      eat(SUB);
+      nt = NODE_SUB;
+    }
     ASTNode* rightChild = divmul();
-    ASTNode* newExprRoot = new ASTNode(tt);
+    ASTNode* newExprRoot = new ASTNode(nt);
     newExprRoot->children.push_back(exprRoot);
     newExprRoot->children.push_back(rightChild);
     exprRoot = newExprRoot;
@@ -51,14 +56,19 @@ ASTNode* Parser::expression() {
 ASTNode* Parser::divmul() {
   ASTNode* factorRoot = factor();
   TokenType tt = currToken.tokenType;
+  NodeType nt = NODE_NOOP;
   while(tt==MULT || tt==DIV) {
-    if(tt==MULT)
-    eat(MULT);
-    else if(tt==DIV)
-    eat(DIV);
+    if(tt==MULT) {
+      eat(MULT);
+      nt = NODE_MULT;
+    }
+    else if(tt==DIV) {
+      eat(DIV);
+      nt = NODE_DIV;
+    }
 
     ASTNode* rightChild = factor();
-    ASTNode* newFactorRoot = new ASTNode(tt);
+    ASTNode* newFactorRoot = new ASTNode(nt);
     newFactorRoot->children.push_back(factorRoot);
     newFactorRoot->children.push_back(rightChild);
     factorRoot = newFactorRoot;
@@ -72,12 +82,12 @@ ASTNode* Parser::factor() {
   TokenType tt = currToken.tokenType;
   if(tt == NUM) {
     eat(NUM);
-    ASTNode* numLeaf = new ASTNode(NUM);
+    ASTNode* numLeaf = new ASTNode(NODE_NUM);
     numLeaf->num = stoi(t.value);
     return numLeaf;
   } else if(tt == SUB) {
     eat(SUB);
-    ASTNode* negRoot = new ASTNode(NEG);
+    ASTNode* negRoot = new ASTNode(NODE_NEG);
     negRoot->children.push_back(factor());
     return negRoot;
   } else if(tt == OPAREN){
@@ -94,7 +104,7 @@ ASTNode* Parser::factor() {
 ASTNode* Parser::variable() {
   Token idToken = currToken;
   eat(ID);
-  ASTNode* idLeaf = new ASTNode(ID);
+  ASTNode* idLeaf = new ASTNode(NODE_ID);
   idLeaf->id = idToken.value;
   return idLeaf;
 }

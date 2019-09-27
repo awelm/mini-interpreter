@@ -14,19 +14,19 @@ int Interpreter::interpret() {
 
 int Interpreter::visit(ASTNode* n) {
   switch(n->nodeType) {
-    case NUM:
+    case NODE_NUM:
     return visitNum(n);
     break;
-    case NEG:
+    case NODE_NEG:
     return visitUnaryOperator(n);
     break;
-    case ADD:
-    case SUB:
-    case MULT:
-    case DIV:
+    case NODE_ADD:
+    case NODE_SUB:
+    case NODE_MULT:
+    case NODE_DIV:
     return visitBinaryOperator(n);
     break;
-    case ASSIGN:
+    case NODE_ASSIGN:
     return visitAssignOperator(n);
     break;
     default:
@@ -39,16 +39,16 @@ int Interpreter::visitBinaryOperator(ASTNode* n) {
   int leftVal = visit(n->children[0]);
   int rightVal = visit(n->children[1]);
   switch(n->nodeType) {
-    case ADD:
+    case NODE_ADD:
     return leftVal + rightVal;
     break;
-    case SUB:
+    case NODE_SUB:
     return leftVal - rightVal;
     break;
-    case MULT:
+    case NODE_MULT:
     return leftVal * rightVal;
     break;
-    case DIV:
+    case NODE_DIV:
     return leftVal / rightVal;
     break;
     default:
@@ -60,7 +60,7 @@ int Interpreter::visitBinaryOperator(ASTNode* n) {
 int Interpreter::visitUnaryOperator(ASTNode* n) {
   int childVal = visit(n->children[0]);
   switch(n->nodeType) {
-    case NEG:
+    case NODE_NEG:
     return -1 * childVal;
     default:
     throw UNEXPECTED_TOKEN;

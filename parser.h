@@ -16,13 +16,26 @@ using namespace std;
   variable := ID
 */
 
+enum NodeType {
+  NODE_COMPOUND,
+  NODE_ADD,
+  NODE_SUB,
+  NODE_MULT,
+  NODE_DIV,
+  NODE_NEG,
+  NODE_ASSIGN,
+  NODE_ID,
+  NODE_NUM,
+  NODE_NOOP
+};
+
 class ASTNode {
 public:
-  TokenType nodeType;
+  NodeType nodeType;
   vector<ASTNode*> children;
   int num;
   string id;
-  ASTNode(TokenType tt);
+  ASTNode(NodeType tt);
 };
 
 class Parser {
