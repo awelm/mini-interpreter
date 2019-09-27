@@ -1,0 +1,5 @@
+#ignore binary build
+a.out
+
+# ignore precompiled header files
+*.gch
