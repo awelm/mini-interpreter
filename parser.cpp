@@ -33,17 +33,47 @@ ASTNode* Parser::statementList() {
 ASTNode* Parser::statement() {
   if(this->currToken.tokenType == EMPTY)
     return new ASTNode(NODE_NOOP);
-  else
+  else {
     return assignment();
+  }
+}
+
+ASTNode* Parser::rvalue() {
+  ASTNode* expr = expression();
+  TokenType tt = this->currToken.tokenType;
+  if(tt == LESSTHAN || tt == GREATERTHAN || tt == EQUAL) {
+    ASTNode* leftExpr = expr;
+    NodeType nt = NODE_NOOP;
+    if(tt == LESSTHAN) {
+      eat(LESSTHAN);
+      nt = NODE_LESS_THAN;
+    }
+    else if(tt == GREATERTHAN) {
+      eat(GREATERTHAN);
+      nt = NODE_GREATER_THAN;
+    }
+    else {
+      eat(EQUAL);
+      eat(EQUAL);
+      nt = NODE_EQUAL_TO;
+    }
+    ASTNode* rightExpr = expression();
+    ASTNode* comparisonRoot = new ASTNode(nt);
+    comparisonRoot->children.push_back(leftExpr);
+    comparisonRoot->children.push_back(rightExpr);
+    return comparisonRoot;
+  } else {
+    return expr;
+  }
 }
 
 ASTNode* Parser::assignment() {
   ASTNode* varRoot = variable();
-  eat(ASSIGN);
-  ASTNode* exprRoot = expression();
+  eat(EQUAL);
+  ASTNode* rvalueRoot = rvalue();
   ASTNode* assignRoot = new ASTNode(NODE_ASSIGN);
   assignRoot->children.push_back(varRoot);
-  assignRoot->children.push_back(exprRoot);
+  assignRoot->children.push_back(rvalueRoot);
   return assignRoot;
 }
 

@@ -15,8 +15,10 @@ enum TokenType {
   CPAREN, //7
   END, //8
   ID, //9
-  ASSIGN, //10
-  EMPTY //11
+  EQUAL, //10
+  LESSTHAN, //11
+  GREATERTHAN, //12
+  EMPTY //13
 };
 
 
@@ -44,4 +46,5 @@ public:
   Lexer(string program);
   bool hasNextToken();
   Token getNextToken();
+  Token peek();
 };

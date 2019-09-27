@@ -152,17 +152,43 @@ void lexerTests() {
   while(lx.hasNextToken())
     output.push_back(lx.getNextToken());
   assert(output[0] == Token(ID, string("a")));
-  assert(output[1] == Token(ASSIGN, string("=")));
+  assert(output[1] == Token(EQUAL, string("=")));
   assert(output[2] == Token(ID, string("b")));
   assert(output[3] == Token(MULT, string("*")));
   assert(output[4] == Token(ID, string("c")));
   assert(output[5] == Token(SEMI, string(";")));
   assert(output[6] == Token(ID, string("x")));
-  assert(output[7] == Token(ASSIGN, string("=")));
+  assert(output[7] == Token(EQUAL, string("=")));
   assert(output[8] == Token(ID, string("a")));
   assert(output[9] == Token(MULT, string("*")));
   assert(output[10] == Token(NUM, string("10")));
   assert(output[11] == Token(SEMI, string(";")));
+
+  // test comparison
+  lx = Lexer("1<2;");
+  output.clear();
+  while(lx.hasNextToken())
+    output.push_back(lx.getNextToken());
+  assert(output[0] == Token(NUM, string("1")));
+  assert(output[1] == Token(LESSTHAN, string("<")));
+  assert(output[2] == Token(NUM, string("2")));
+
+  lx = Lexer("a>b;");
+  output.clear();
+  while(lx.hasNextToken())
+    output.push_back(lx.getNextToken());
+  assert(output[0] == Token(ID, string("a")));
+  assert(output[1] == Token(GREATERTHAN, string(">")));
+  assert(output[2] == Token(ID, string("b")));
+
+  lx = Lexer("a==b;");
+  output.clear();
+  while(lx.hasNextToken())
+    output.push_back(lx.getNextToken());
+  assert(output[0] == Token(ID, string("a")));
+  assert(output[1] == Token(EQUAL, string("=")));
+  assert(output[2] == Token(EQUAL, string("=")));
+  assert(output[3] == Token(ID, string("b")));
 }
 
 void interpreterTests() {
@@ -274,6 +300,43 @@ void interpreterTests() {
   i.interpret();
   assert(i.getRuntimeValue("f") == 10);
   assert(i.getRuntimeValue("g") == 11);
+
+  // comparison operator tests
+  lx = Lexer("f=1<2; ff=1>2; g=1>0; gg=1<0; h=1>1; hh=1<1; i=1==1;");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("f") == 1);
+  assert(i.getRuntimeValue("ff") == 0);
+  assert(i.getRuntimeValue("g") == 1);
+  assert(i.getRuntimeValue("gg") == 0);
+  assert(i.getRuntimeValue("h") == 0);
+  assert(i.getRuntimeValue("hh") == 0);
+  assert(i.getRuntimeValue("i") == 1);
+
+  lx = Lexer("f= 10==(5+5*1);");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("f") == 1);
+
+  lx = Lexer("f=10; g=f==10;");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("g") == 1);
+
+  lx = Lexer("f=10; g=-f==-10;");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("g") == 1);
+
+  lx = Lexer("f=10; g=f<f;");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("g") == 0);
+
+  lx = Lexer("f=10; g=21>-f+30;");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("g") == 1);
 }
 
 int main() {

@@ -26,6 +26,9 @@ int Interpreter::visit(ASTNode* n) {
     case NODE_SUB:
     case NODE_MULT:
     case NODE_DIV:
+    case NODE_LESS_THAN:
+    case NODE_GREATER_THAN:
+    case NODE_EQUAL_TO:
     return visitBinaryOperator(n);
     break;
     case NODE_ASSIGN:
@@ -66,6 +69,15 @@ int Interpreter::visitBinaryOperator(ASTNode* n) {
     case NODE_DIV:
     return leftVal / rightVal;
     break;
+    case NODE_LESS_THAN:
+    return leftVal < rightVal;
+    break;
+    case NODE_GREATER_THAN:
+    return leftVal > rightVal;
+    break;
+    case NODE_EQUAL_TO:
+    return leftVal == rightVal;
+    break;
     default:
     throw UNEXPECTED_TOKEN;
     break;
@@ -102,7 +114,9 @@ int Interpreter::visitVar(ASTNode* n) {
 }
 
 int Interpreter::getRuntimeValue(string variable) {
-  if(symbolTable.find(variable) == symbolTable.end())
+  if(symbolTable.find(variable) == symbolTable.end()) {
+    cerr << "unkown symbol " << variable << " encountered during runtime" << endl;
     throw UNKNOWN_SYMBOL;
+  }
   return symbolTable[variable];
 }

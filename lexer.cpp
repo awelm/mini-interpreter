@@ -8,13 +8,14 @@ using namespace std;
 
 /*
 Supported operations:
-add: 123+4;
-sub: 4-2;
-multiply: 1*1;
-divide: 4/2;
-parentheses: (4+1);
-negative operator: 3 + -2;
-variable: x = 4 + 2 - y;
+add: 123+4
+sub: 4-2
+multiply: 1*1
+divide: 4/2
+parentheses: (4+1)
+negative operator: 3 + -2
+variable: x = 4 + 2 - y
+comparision: x = a < 4, y = a > b, z = b==x
 */
 
 Token::Token() {
@@ -33,7 +34,7 @@ bool operator==(const Token& lhs, const Token& rhs) {
 bool Lexer::isTerminal(char c) {
   if (isspace(c))
   return true;
-  if(c=='+' || c=='-' || c=='*' || c=='/' || c=='(' || c==')' || c==';' || c=='=')
+  if(c=='+' || c=='-' || c=='*' || c=='/' || c=='(' || c==')' || c==';' || c=='=' || c=='<' || c=='>')
   return true;
   else
   return false;
@@ -97,7 +98,13 @@ Token Lexer::getNextToken() {
           currToken = Token(CPAREN, string(1,program[currentIndex]));
           break;
           case '=':
-          currToken = Token(ASSIGN, string(1,program[currentIndex]));
+          currToken = Token(EQUAL, string(1,program[currentIndex]));
+          break;
+          case '<':
+          currToken = Token(LESSTHAN, string(1,program[currentIndex]));
+          break;
+          case '>':
+          currToken = Token(GREATERTHAN, string(1,program[currentIndex]));
           break;
         }
         nextTokenStart = currentIndex + 1;
@@ -133,4 +140,14 @@ Token Lexer::getNextToken() {
   }
 
   return Token(EMPTY, "");
+}
+
+Token Lexer::peek() {
+  // save all state, call getNextToken, and then restore state
+  int savedNextTokenStart = nextTokenStart;
+  Token savedPrevToken = prevToken;
+  Token peekedToken = getNextToken();
+  nextTokenStart = savedNextTokenStart;
+  prevToken = savedPrevToken;
+  return peekedToken;
 }

@@ -9,7 +9,8 @@ using namespace std;
 /* GRAMMAR
   statement_list := statement | statement SEMI statement_list
   statement := assignment | EMPTY
-  assignment := variable ASSIGN expression
+  assignment := variable EQUAL rvalue
+  rvalue := expression [(GREATERTHAN|LESSTHAN|EQUAL EQUAL) expression]
   expression := <divmul>((ADD|SUB)<divmul>)*
   divmul := <factor>((MULT|DIV)<factor>)*
   factor := NUM | SUB factor | (OPAREN expression CPAREN) | variable
@@ -26,7 +27,10 @@ enum NodeType {
   NODE_ASSIGN, //6
   NODE_ID, //7
   NODE_NUM, //8
-  NODE_NOOP //9
+  NODE_NOOP, //9
+  NODE_LESS_THAN, //10
+  NODE_GREATER_THAN, //11
+  NODE_EQUAL_TO //12
 };
 
 class ASTNode {
@@ -48,6 +52,7 @@ public:
   void eat(TokenType t);
   ASTNode* statementList();
   ASTNode* statement();
+  ASTNode* rvalue();
   ASTNode* assignment();
   ASTNode* expression();
   ASTNode* divmul();
