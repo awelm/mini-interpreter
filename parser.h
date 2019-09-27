@@ -1,10 +1,8 @@
 #include <string>
 #include <vector>
-
-#ifndef LEXER_INCL_GUARD
-#define LEXER_INCL_GUARD
 #include "lexer.h"
-#endif
+
+#pragma once
 
 using namespace std;
 

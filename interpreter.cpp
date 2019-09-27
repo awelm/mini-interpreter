@@ -4,57 +4,53 @@
 
 using namespace std;
 
-Interpreter::Interpreter(Lexer l): lx(l) {
-  currToken = lx.getNextToken();
+Interpreter::Interpreter(Parser p): p(p) {
 }
 
-void Interpreter::eat(TokenType tokenType) {
-  if(this->currToken.tokenType == tokenType) {
-    this->currToken = lx.getNextToken();
-  }
-  else
-    throw UNEXPECTED_TOKEN;
+int Interpreter::interpret() {
+  // Assuming start symbol is 'expression'
+  return visit(p.expression());
 }
 
-int Interpreter::expression() {
-  int totalSum = divmul();
-  while(currToken.tokenType==ADD || currToken.tokenType==SUB) {
-      if(currToken.tokenType==ADD) {
-        eat(ADD);
-        totalSum += divmul();
-      }
-      else {
-        eat(SUB);
-        totalSum -= divmul();
-      }
+int Interpreter::visit(ASTNode* n) {
+  switch(n->nodeType) {
+    case NUM:
+      return visitNum(n);
+      break;
+    case ADD:
+    case SUB:
+    case MULT:
+    case DIV:
+      return visitOperator(n);
+      break;
+    default:
+      throw UNEXPECTED_TOKEN;
+      break;
   }
-  return totalSum;
 }
 
-int Interpreter::divmul() {
-  int totalProd = factor();
-  while(currToken.tokenType==MULT || currToken.tokenType==DIV) {
-      if(currToken.tokenType==MULT) {
-        eat(MULT);
-        totalProd *= divmul();
-      }
-      else {
-        eat(DIV);
-        totalProd /= divmul();
-      }
+int Interpreter::visitOperator(ASTNode* n) {
+  int leftVal = visit(n->children[0]);
+  int rightVal = visit(n->children[1]);
+  switch(n->nodeType) {
+    case ADD:
+      return leftVal + rightVal;
+      break;
+    case SUB:
+      return leftVal - rightVal;
+      break;
+    case MULT:
+      return leftVal * rightVal;
+      break;
+    case DIV:
+      return leftVal / rightVal;
+      break;
+    default:
+      throw UNEXPECTED_TOKEN;
+      break;
   }
-  return totalProd;
 }
 
-int Interpreter::factor() {
-  Token t = currToken;
-  if(t.tokenType == NUM) {
-    eat(NUM);
-    return stoi(t.value);
-  } else {
-    eat(OPAREN);
-    int expressionVal = expression();
-    eat(CPAREN);
-    return expressionVal;
-  }
+int Interpreter::visitNum(ASTNode* n) {
+  return n->num;
 }

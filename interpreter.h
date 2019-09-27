@@ -1,21 +1,19 @@
 #include <string>
-
-#ifndef LEXER_INCL_GUARD
-#define LEXER_INCL_GUARD
+#include "parser.h"
 #include "lexer.h"
-#endif
+
+#pragma once
 
 using namespace std;
 
 class Interpreter {
 private:
-  Lexer lx;
-  Token currToken;
+  Parser p;
+  int visit(ASTNode* n);
+  int visitOperator(ASTNode* n);
+  int visitNum(ASTNode* n);
 public:
   static const int UNEXPECTED_TOKEN = 17;
-  Interpreter(Lexer l);
-  void eat(TokenType t);
-  int expression();
-  int divmul();
-  int factor();
+  Interpreter(Parser p);
+  int interpret();
 };

@@ -71,77 +71,54 @@ void lexerTests() {
 
 void interpreterTests() {
   Lexer lx("123+342;");
-  assert(Interpreter(lx).expression() == 465);
+  Parser p = Parser(lx);
+  assert(Interpreter(p).interpret() == 465);
 
   lx = Lexer("4  - 12;");
-  assert(Interpreter(lx).expression() == -8);
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == -8);
 
   lx = Lexer("4 + 3 * 8;");
-  assert(Interpreter(lx).expression() == 28);
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == 28);
 
   lx = Lexer("(4 + 3) * 8;");
-  assert(Interpreter(lx).expression() == 56);
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == 56);
 
   lx = Lexer("(((4)));");
-  assert(Interpreter(lx).expression() == 4);
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == 4);
 
   lx = Lexer("(80-10)/7 + 4;");
-  assert(Interpreter(lx).expression() == 14);
+  p = Parser(lx);
+  assert(Interpreter(p).interpret() == 14);
 
   // Test invalid expressions
-  lx = Lexer("1+;");
   bool exceptionThrown = false;
   try {
-    Interpreter(lx).expression();
+    lx = Lexer("1+;");
+    Interpreter(lx).interpret();
   } catch (int e) {
     if(e == Interpreter::UNEXPECTED_TOKEN)
       exceptionThrown = true;
   }
   assert(exceptionThrown);
 
-  lx = Lexer("1++3;");
   exceptionThrown = false;
   try {
-    Interpreter(lx).expression();
+    lx = Lexer("1++3;");
+    Interpreter(lx).interpret();
   } catch (int e) {
     if(e == Interpreter::UNEXPECTED_TOKEN)
       exceptionThrown = true;
   }
   assert(exceptionThrown);
 }
-
-
-void parserTests() {
-  Lexer lx("1*2;");
-  Parser p(lx);
-  p.expression();
-
-  lx = Lexer("4  - 12;");
-  p = Parser(lx);
-  p.expression();
-
-  lx = Lexer("4 + 3 * 8;");
-  p = Parser(lx);
-  p.expression();
-
-  lx = Lexer("(4 + 3) * 8;");
-  p = Parser(lx);
-  p.expression();
-
-  lx = Lexer("(((4)));");
-  p = Parser(lx);
-  p.expression();
-
-  lx = Lexer("(80-10)/7 + 4;");
-  p = Parser(lx);
-  p.expression();
-}
-
 
 int main() {
   lexerTests();
   interpreterTests();
-  parserTests();
   cout << "All tests passed" << endl;
   return 0;
 }
