@@ -14,7 +14,9 @@ enum TokenType {
   OPAREN,
   CPAREN,
   END,
-  NEG,
+  ID,
+  NEG, // used only in parser and interpreter
+  ASSIGN,
   EMPTY
 };
 
@@ -34,6 +36,7 @@ private:
   int nextTokenStart;
   bool isTerminal(char c);
   Token prevToken;
+  Token getTokenType(string currTokenValue);
 
 public:
   static const int INVALID_TOKEN = 15;

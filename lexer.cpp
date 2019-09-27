@@ -14,6 +14,7 @@ multiply: 1*1;
 divide: 4/2;
 parentheses: (4+1);
 negative operator: 3 + -2;
+variable: x = 4 + 2 - y;
 */
 
 Token::Token() {
@@ -26,16 +27,24 @@ Token::Token(TokenType tt, string val) {
 }
 
 bool operator==(const Token& lhs, const Token& rhs) {
-    return lhs.tokenType == rhs.tokenType && lhs.value == rhs.value;
+  return lhs.tokenType == rhs.tokenType && lhs.value == rhs.value;
 }
 
 bool Lexer::isTerminal(char c) {
   if (isspace(c))
-    return true;
-  if(c=='+' || c=='-' || c=='*' || c=='/' || c=='(' || c==')' || c==';')
-    return true;
+  return true;
+  if(c=='+' || c=='-' || c=='*' || c=='/' || c=='(' || c==')' || c==';' || c=='=')
+  return true;
   else
-    return false;
+  return false;
+}
+
+Token Lexer::getTokenType(string currTokenValue) {
+  for(int x=0; x<currTokenValue.size(); x++) {
+    if(isalpha(currTokenValue[x]))
+    return Token(ID, currTokenValue);
+  }
+  return Token(NUM, currTokenValue);
 }
 
 Lexer::Lexer(string program) {
@@ -70,10 +79,7 @@ Token Lexer::getNextToken() {
           currToken = Token(ADD, string(1,program[currentIndex]));
           break;
           case '-':
-            if(prevToken.tokenType == CPAREN || prevToken.tokenType == NUM)
-              currToken = Token(SUB, string(1,program[currentIndex]));
-            else
-              currToken = Token(NEG, string(1,program[currentIndex]));
+          currToken = Token(SUB, string(1,program[currentIndex]));
           break;
           case '*':
           currToken = Token(MULT, string(1,program[currentIndex]));
@@ -90,22 +96,33 @@ Token Lexer::getNextToken() {
           case ')':
           currToken = Token(CPAREN, string(1,program[currentIndex]));
           break;
+          case '=':
+          currToken = Token(ASSIGN, string(1,program[currentIndex]));
+          break;
         }
         nextTokenStart = currentIndex + 1;
         prevToken = currToken;
         return currToken;
       } else {
-        // Check if string only contains numbers
         string currTokenValue = program.substr(nextTokenStart, currentIndex-nextTokenStart);
-        try {
-          stoi(currTokenValue);
-        } catch(...) {
-          throw INVALID_NUMBER;
+        Token extractedToken = getTokenType(currTokenValue);
+
+        // Token validation
+        switch(extractedToken.tokenType) {
+          case NUM:
+          try {
+            stoi(currTokenValue);
+          } catch(...) {
+            throw INVALID_NUMBER;
+          }
+          break;
+          default:
+          break;
         }
 
         nextTokenStart = currentIndex;
-        prevToken = Token(NUM, currTokenValue);
-        return prevToken;
+        prevToken = extractedToken;
+        return extractedToken;
       }
     }
 

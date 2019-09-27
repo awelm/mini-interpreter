@@ -20,14 +20,24 @@ void Parser::eat(TokenType tokenType) {
   throw UNEXPECTED_TOKEN;
 }
 
+ASTNode* Parser::assignment() {
+  ASTNode* varRoot = variable();
+  eat(ASSIGN);
+  ASTNode* exprRoot = expression();
+  ASTNode* assignRoot = new ASTNode(ASSIGN);
+  assignRoot->children.push_back(varRoot);
+  assignRoot->children.push_back(exprRoot);
+  return assignRoot;
+}
+
 ASTNode* Parser::expression() {
   ASTNode* exprRoot = divmul();
   TokenType tt = currToken.tokenType;
   while(tt==ADD || tt==SUB) {
     if(tt==ADD)
-      eat(ADD);
+    eat(ADD);
     else if(tt==SUB)
-      eat(SUB);
+    eat(SUB);
     ASTNode* rightChild = divmul();
     ASTNode* newExprRoot = new ASTNode(tt);
     newExprRoot->children.push_back(exprRoot);
@@ -43,9 +53,9 @@ ASTNode* Parser::divmul() {
   TokenType tt = currToken.tokenType;
   while(tt==MULT || tt==DIV) {
     if(tt==MULT)
-      eat(MULT);
+    eat(MULT);
     else if(tt==DIV)
-      eat(DIV);
+    eat(DIV);
 
     ASTNode* rightChild = factor();
     ASTNode* newFactorRoot = new ASTNode(tt);
@@ -65,15 +75,26 @@ ASTNode* Parser::factor() {
     ASTNode* numLeaf = new ASTNode(NUM);
     numLeaf->num = stoi(t.value);
     return numLeaf;
-  } else if(tt == NEG) {
-    eat(NEG);
+  } else if(tt == SUB) {
+    eat(SUB);
     ASTNode* negRoot = new ASTNode(NEG);
     negRoot->children.push_back(factor());
     return negRoot;
-  } else {
+  } else if(tt == OPAREN){
     eat(OPAREN);
     ASTNode* subExprRoot = expression();
     eat(CPAREN);
     return subExprRoot;
+  } else {
+    ASTNode* varRoot = variable();
+    return varRoot;
   }
+}
+
+ASTNode* Parser::variable() {
+  Token idToken = currToken;
+  eat(ID);
+  ASTNode* idLeaf = new ASTNode(ID);
+  idLeaf->id = idToken.value;
+  return idLeaf;
 }
