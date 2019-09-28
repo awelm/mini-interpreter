@@ -42,6 +42,9 @@ int Interpreter::visit(ASTNode* n) {
     case NODE_CONDITIONAL:
     return visitConditional(n);
     break;
+    case NODE_LOOP:
+    return visitLoop(n);
+    break;
     default:
     throw UNEXPECTED_TOKEN;
     break;
@@ -52,6 +55,16 @@ int Interpreter::visit(ASTNode* n) {
 int Interpreter::visitCompound(ASTNode* n) {
   for(int child = 0; child < n->children.size(); child++) {
     visit(n->children[child]);
+  }
+  return 0;
+}
+
+// Return value isn't used
+int Interpreter::visitLoop(ASTNode* n) {
+  int conditionalIsTrue = visit(n->children[0]) != 0;
+  while(conditionalIsTrue) {
+    visit(n->children[1]);
+    conditionalIsTrue = visit(n->children[0]) != 0;
   }
   return 0;
 }

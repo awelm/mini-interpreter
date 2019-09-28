@@ -23,7 +23,8 @@ enum TokenType {
   ELSE, //14
   OBRACE, //15
   CBRACE, //16
-  EMPTY //13
+  WHILE, //17
+  EMPTY //18
 };
 
 struct Token {

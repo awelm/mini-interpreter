@@ -14,6 +14,7 @@ private:
   int visit(ASTNode* n);
   int visitCompound(ASTNode* n);
   int visitConditional(ASTNode* n);
+  int visitLoop(ASTNode* n);
   int visitUnaryOperator(ASTNode* n);
   int visitBinaryOperator(ASTNode* n);
   int visitAssignOperator(ASTNode* n);

@@ -376,6 +376,22 @@ void interpreterTests() {
   i = Interpreter(Parser(lx));
   i.interpret();
   assert(i.getRuntimeValue("b") == 5);
+
+  // test loops
+  lx = Lexer("i=1; t=0; while(i<11){t=t+i; i=i+1;};");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 55);
+
+  lx = Lexer("i=1; while(i<0){i=i+1;};");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("i") == 1);
+
+  lx = Lexer("i=1; t=0; while(i<11){if(i==5){;} else{t=t+i;}; i=i+1;};");
+  i = Interpreter(Parser(lx));
+  i.interpret();
+  assert(i.getRuntimeValue("t") == 50);
 }
 
 int main() {

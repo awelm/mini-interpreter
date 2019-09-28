@@ -16,12 +16,14 @@ parentheses: (4+1)
 negative operator: 3 + -2
 variable: x = 4 + 2 - y
 comparision: x = a < 4, y = a > b, z = b==x
-conditional: if(a<b) { x=1;} else {x=2;}
+conditional: if(a<b) { x=1;} else {x=2;};
+loop: while(a<10) {a++;};
 */
 
 const unordered_map<string, Token> RESERVED_KEYWORDS = {
     {"if", Token(IF, "if")},
-    {"else", Token(ELSE, "else")}
+    {"else", Token(ELSE, "else")},
+    {"while", Token(WHILE, "while")}
 };
 
 Token::Token() {
