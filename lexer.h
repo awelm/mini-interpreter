@@ -1,4 +1,5 @@
 #include <string>
+#include <unordered_map>
 
 #pragma once
 
@@ -18,9 +19,12 @@ enum TokenType {
   EQUAL, //10
   LESSTHAN, //11
   GREATERTHAN, //12
+  IF, //13
+  ELSE, //14
+  OBRACE, //15
+  CBRACE, //16
   EMPTY //13
 };
-
 
 struct Token {
   Token();
@@ -37,7 +41,7 @@ private:
   int nextTokenStart;
   bool isTerminal(char c);
   Token prevToken;
-  Token getTokenType(string currTokenValue);
+  Token getMultiCharToken(string currTokenValue);
 
 public:
   static const int INVALID_TOKEN = 15;

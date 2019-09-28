@@ -8,7 +8,8 @@ using namespace std;
 
 /* GRAMMAR
   statement_list := statement | statement SEMI statement_list
-  statement := assignment | EMPTY
+  statement := assignment | conditonal | EMPTY
+  conditional := IF OPAREN rvalue CPAREN OBRACE statement_list CBRACE ELSE OBRACE statement_list CBRACE
   assignment := variable EQUAL rvalue
   rvalue := expression [(GREATERTHAN|LESSTHAN|EQUAL EQUAL) expression]
   expression := <divmul>((ADD|SUB)<divmul>)*
@@ -30,7 +31,8 @@ enum NodeType {
   NODE_NOOP, //9
   NODE_LESS_THAN, //10
   NODE_GREATER_THAN, //11
-  NODE_EQUAL_TO //12
+  NODE_EQUAL_TO, //12
+  NODE_CONDITIONAL //13
 };
 
 class ASTNode {
@@ -50,6 +52,7 @@ public:
   static const int UNEXPECTED_TOKEN = 17;
   Parser(Lexer l);
   void eat(TokenType t);
+  ASTNode* conditional();
   ASTNode* statementList();
   ASTNode* statement();
   ASTNode* rvalue();

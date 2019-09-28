@@ -13,6 +13,7 @@ private:
   unordered_map<string, int> symbolTable;
   int visit(ASTNode* n);
   int visitCompound(ASTNode* n);
+  int visitConditional(ASTNode* n);
   int visitUnaryOperator(ASTNode* n);
   int visitBinaryOperator(ASTNode* n);
   int visitAssignOperator(ASTNode* n);

@@ -8,7 +8,7 @@ Interpreter::Interpreter(Parser p): p(p) {
 }
 
 void Interpreter::interpret() {
-  // Assuming start symbol is 'statement_list'
+  // Assuming start symbol is 'statementList'
   visit(p.statementList());
 }
 
@@ -39,6 +39,9 @@ int Interpreter::visit(ASTNode* n) {
     case NODE_ID:
     return visitVar(n);
     break;
+    case NODE_CONDITIONAL:
+    return visitConditional(n);
+    break;
     default:
     throw UNEXPECTED_TOKEN;
     break;
@@ -51,6 +54,17 @@ int Interpreter::visitCompound(ASTNode* n) {
     visit(n->children[child]);
   }
   return 0;
+}
+
+// 0 if conditonal evaluated to true, otherwise return value
+int Interpreter::visitConditional(ASTNode* n) {
+  int conditionalIsTrue = visit(n->children[0]) != 0;
+  if(conditionalIsTrue) {
+    visit(n->children[1]);
+  } else {
+    visit(n->children[2]);
+  }
+  return conditionalIsTrue;
 }
 
 int Interpreter::visitBinaryOperator(ASTNode* n) {

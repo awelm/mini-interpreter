@@ -16,7 +16,13 @@ parentheses: (4+1)
 negative operator: 3 + -2
 variable: x = 4 + 2 - y
 comparision: x = a < 4, y = a > b, z = b==x
+conditional: if(a<b) { x=1;} else {x=2;}
 */
+
+const unordered_map<string, Token> RESERVED_KEYWORDS = {
+    {"if", Token(IF, "if")},
+    {"else", Token(ELSE, "else")}
+};
 
 Token::Token() {
   this->tokenType = EMPTY;
@@ -34,18 +40,34 @@ bool operator==(const Token& lhs, const Token& rhs) {
 bool Lexer::isTerminal(char c) {
   if (isspace(c))
   return true;
-  if(c=='+' || c=='-' || c=='*' || c=='/' || c=='(' || c==')' || c==';' || c=='=' || c=='<' || c=='>')
+  if(c=='+' || c=='-' || c=='*' || c=='/' || c=='(' || c==')' || c==';' || c=='=' || c=='<' || c=='>' || c=='{' || c=='}')
   return true;
   else
   return false;
 }
 
-Token Lexer::getTokenType(string currTokenValue) {
+Token Lexer::getMultiCharToken(string currTokenValue) {
+  int alphaCount = 0;
+  int digitCount = 0;
   for(int x=0; x<currTokenValue.size(); x++) {
     if(isalpha(currTokenValue[x]))
-    return Token(ID, currTokenValue);
+      alphaCount++;
+    else if(isdigit(currTokenValue[x]))
+      digitCount++;
+    else {
+      cerr << "Unable to parse token " << currTokenValue << endl;
+      throw INVALID_TOKEN;
+    }
   }
-  return Token(NUM, currTokenValue);
+  if(digitCount == currTokenValue.size())
+    return Token(NUM, currTokenValue);
+  else {
+    // treat language keywords specially
+    if(RESERVED_KEYWORDS.find(currTokenValue) != RESERVED_KEYWORDS.end())
+      return RESERVED_KEYWORDS.find(currTokenValue)->second;
+    else
+      return Token(ID, currTokenValue);
+  }
 }
 
 Lexer::Lexer(string program) {
@@ -106,13 +128,19 @@ Token Lexer::getNextToken() {
           case '>':
           currToken = Token(GREATERTHAN, string(1,program[currentIndex]));
           break;
+          case '{':
+          currToken = Token(OBRACE, string(1,program[currentIndex]));
+          break;
+          case '}':
+          currToken = Token(CBRACE, string(1,program[currentIndex]));
+          break;
         }
         nextTokenStart = currentIndex + 1;
         prevToken = currToken;
         return currToken;
       } else {
         string currTokenValue = program.substr(nextTokenStart, currentIndex-nextTokenStart);
-        Token extractedToken = getTokenType(currTokenValue);
+        Token extractedToken = getMultiCharToken(currTokenValue);
 
         // Token validation
         switch(extractedToken.tokenType) {

@@ -16,8 +16,25 @@ void Parser::eat(TokenType tokenType) {
   if(this->currToken.tokenType == tokenType) {
     this->currToken = lx.getNextToken();
   }
-  else
-  throw UNEXPECTED_TOKEN;
+  else {
+    cerr << "Expected token " << tokenType << " but instead received " << this->currToken.tokenType << endl;
+    throw UNEXPECTED_TOKEN;
+  }
+}
+
+ASTNode* Parser::conditional() {
+  eat(IF); eat(OPAREN);
+  ASTNode* condition = rvalue();
+  eat(CPAREN); eat(OBRACE);
+  ASTNode* trueBlock = statementList();
+  eat(CBRACE); eat(ELSE); eat(OBRACE);
+  ASTNode* falseBlock = statementList();
+  eat(CBRACE);
+  ASTNode* conditionalRoot = new ASTNode(NODE_CONDITIONAL);
+  conditionalRoot->children.push_back(condition);
+  conditionalRoot->children.push_back(trueBlock);
+  conditionalRoot->children.push_back(falseBlock);
+  return conditionalRoot;
 }
 
 ASTNode* Parser::statementList() {
@@ -31,10 +48,12 @@ ASTNode* Parser::statementList() {
 }
 
 ASTNode* Parser::statement() {
-  if(this->currToken.tokenType == EMPTY)
-    return new ASTNode(NODE_NOOP);
-  else {
+  if(this->currToken.tokenType == ID)
     return assignment();
+  else if(this->currToken.tokenType == IF) {
+    return conditional();
+  } else {
+    return new ASTNode(NODE_NOOP);
   }
 }
 
