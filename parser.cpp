@@ -22,6 +22,16 @@ void Parser::eat(TokenType tokenType) {
   }
 }
 
+ASTNode* Parser::print() {
+  ASTNode* printRoot = new ASTNode(NODE_PRINT);
+  eat(PRINT);
+  eat(OPAREN);
+  ASTNode* printExpression = rvalue();
+  printRoot->children.push_back(printExpression);
+  eat(CPAREN);
+  return printRoot;
+}
+
 ASTNode* Parser::loop() {
   eat(WHILE); eat(OPAREN);
   ASTNode* condition = rvalue();
@@ -66,6 +76,8 @@ ASTNode* Parser::statement() {
     return conditional();
   } else if(this->currToken.tokenType == WHILE) {
     return loop();
+  } else if(this->currToken.tokenType == PRINT) {
+    return print();
   } else {
     return new ASTNode(NODE_NOOP);
   }

@@ -24,7 +24,8 @@ enum TokenType {
   OBRACE, //15
   CBRACE, //16
   WHILE, //17
-  EMPTY //18
+  PRINT, //18
+  EMPTY //19
 };
 
 struct Token {

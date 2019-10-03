@@ -1,0 +1,11 @@
+maxNumberTest = 51;
+curr = 0;
+while(curr < maxNumberTest+1) {
+    halfCurr = curr / 2;
+    if (halfCurr*2 == curr) {
+        print(curr);
+    } else {
+        ;
+    };
+    curr = curr + 1;
+}

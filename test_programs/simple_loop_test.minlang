@@ -1,0 +1,6 @@
+loopmax = 10;
+curr = 0;
+while(curr < loopmax) {
+    print(curr);
+    curr = curr + 1;
+}

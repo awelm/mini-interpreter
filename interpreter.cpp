@@ -45,6 +45,9 @@ int Interpreter::visit(ASTNode* n) {
     case NODE_LOOP:
     return visitLoop(n);
     break;
+    case NODE_PRINT:
+    return visitPrint(n);
+    break;
     default:
     throw UNEXPECTED_TOKEN;
     break;
@@ -138,6 +141,14 @@ int Interpreter::visitVar(ASTNode* n) {
   if(symbolTable.find(varName) == symbolTable.end())
   throw UNKNOWN_SYMBOL;
   return symbolTable[varName];
+}
+
+// Return value isn't used
+int Interpreter::visitPrint(ASTNode* n) {
+  int printVal = visit(n->children[0]);
+  // TODO: add ability to print characters
+  cout << printVal << endl;
+  return 0;
 }
 
 int Interpreter::getRuntimeValue(string variable) {

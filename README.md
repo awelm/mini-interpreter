@@ -15,4 +15,7 @@ The end goal is to create a programming language that supports arithmetic, varia
 ```
 
 ## Test
-Run `make test` to run the various lexer and interpreter tests that I have written
+Run `make test` to run the various lexer and interpreter tests that I have written. You can also run `make build` and then run a test program I wrote to print out all positive even numbers <= 50 using `./mini_interpreter test_programs/print_evens.minlang`
+
+## Run
+Run `make build` to build the interpreter binary. Then run `./mini_interpreter <path/to/program/programName.minlang>` to run your minlang program.

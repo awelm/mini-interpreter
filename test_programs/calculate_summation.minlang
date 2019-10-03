@@ -1,0 +1,10 @@
+total = 0;
+lastSummand = 50;
+curr = 0;
+
+while(curr < lastSummand + 1) {
+    total = total + curr;
+    curr = curr + 1;
+};
+
+print(total);

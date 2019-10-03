@@ -20,6 +20,7 @@ private:
   int visitAssignOperator(ASTNode* n);
   int visitNum(ASTNode* n);
   int visitVar(ASTNode* n);
+  int visitPrint(ASTNode* n);
 public:
   static const int UNEXPECTED_TOKEN = 17;
   static const int UNKNOWN_SYMBOL = 18;
