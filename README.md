@@ -1,15 +1,15 @@
 # mini-interpreter
 
-I'm making this simple interpreter to understand how interpreters and compilers really work under the hood. The end goal is to make a mini-language that supports variables, conditionals, and loops. This project is currently in active development.
+I built this simple interpreter to understand how interpreters and compilers really work under the hood! The mini-language currently supports variables (only integers), conditionals, loops, and print statements. This project is currently in active development.
 
-The end goal is to create a programming language that supports arithmetic, variables (only numbers and strings), conditionals, loops, and print statements. An example program would look something like this:
+Here is an example program that computes 1+2+3+...+10:
 ```
-  # compute sum from 1 to 10
   counter = 1;
   total = 0;
-  while(counter <= 10) {
+  maxSummand = 10;
+  while(counter < maxSummand+1) {
     total = total + counter;
-    loop_counter = loop_counter + 1;
+    counter = counter + 1;
   }
   print total
 ```
